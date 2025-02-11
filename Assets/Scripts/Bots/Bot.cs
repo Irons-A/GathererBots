@@ -1,13 +1,14 @@
 using UnityEngine;
-using static UnityEditor.Progress;
 
 [RequireComponent(typeof(BotMover))]
+[RequireComponent(typeof(BotDistanceChecker))]
 public class Bot : MonoBehaviour
 {
     [SerializeField] private Transform _resourceAnchor;
     [SerializeField] private Base _assignedBase;
 
     private BotMover _mover;
+    private BotDistanceChecker _distanceChecker;
 
     public bool IsCarryingResource { get; private set; } = false;
     public Resource TargetResource { get; private set; }
@@ -15,13 +16,25 @@ public class Bot : MonoBehaviour
     private void Awake()
     {
         _mover = GetComponent<BotMover>();
+        _distanceChecker = GetComponent<BotDistanceChecker>();
+    }
+
+    private void OnEnable()
+    {
+        _distanceChecker.TargetReached += PickUpResource;
+    }
+
+    private void OnDisable()
+    {
+        _distanceChecker.TargetReached -= PickUpResource;
     }
 
     private void Update()
     {
-        if (TargetResource == null)
+        if (TargetResource == null || TargetResource.isActiveAndEnabled == false)
         {
             IsCarryingResource = false;
+            TargetResource = null;
             _mover.ClearTarget();
         }
     }
@@ -36,6 +49,7 @@ public class Bot : MonoBehaviour
         IsCarryingResource = false;
         TargetResource = resource;
         _mover.SetTarget(resource.transform);
+        _distanceChecker.SetTarget(resource);
     }
 
     public void PickUpResource()

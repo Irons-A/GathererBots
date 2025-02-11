@@ -35,9 +35,9 @@ public class Resource : MonoBehaviour
 
     public void GetPicked(Transform parent)
     {
-        _rigidbody.isKinematic = true;
         _rigidbody.velocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
+        _rigidbody.isKinematic = true;
 
         transform.SetParent(parent);
 

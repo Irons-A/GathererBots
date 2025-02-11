@@ -90,6 +90,7 @@ public class BaseScanner : MonoBehaviour
                     if (foundResource != null)
                     {
                         bot.SetTargetResource(foundResource);
+                        foundResource.MarkForCollection();
                     }
                 }
             }
