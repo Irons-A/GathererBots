@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BaseScanner : MonoBehaviour
@@ -9,15 +11,25 @@ public class BaseScanner : MonoBehaviour
     [SerializeField] private float _searchFieldRadius = 10f;
 
     private Coroutine _scanRoutine;
+    private List<Resource> _assignedResources;
+
+    public event Action<Bot, Resource> GivingOrder;
 
     private void Start()
     {
+        _assignedResources = new List<Resource>();
+
         if (_scanRoutine != null)
         {
             StopCoroutine(_scanRoutine);
         }
 
         _scanRoutine = StartCoroutine(ScanRoutine());
+    }
+
+    private void ClearTakenResources()
+    {
+        _assignedResources = _assignedResources.Where(r => r.isActiveAndEnabled == true).ToList();
     }
 
     private List<Bot> CheckForAvailableBots()
@@ -41,9 +53,12 @@ public class BaseScanner : MonoBehaviour
 
         List<Resource> availableResources = new List<Resource>();
 
+        ClearTakenResources();
+
         foreach (Collider collider in colliders)
         {
-            if (collider.gameObject.TryGetComponent(out Resource resource) && resource.IsMarkedForCollection == false)
+            if (collider.gameObject.TryGetComponent(out Resource resource) 
+                && _assignedResources.Contains(resource) == false)
             {
                 availableResources.Add(resource);
             }
@@ -89,8 +104,8 @@ public class BaseScanner : MonoBehaviour
 
                     if (foundResource != null)
                     {
-                        bot.SetTargetResource(foundResource);
-                        foundResource.MarkForCollection();
+                        GivingOrder?.Invoke(bot, foundResource);
+                        _assignedResources.Add(foundResource);
                     }
                 }
             }

@@ -9,21 +9,14 @@ public class Resource : MonoBehaviour
     public event Action<Resource> IsCollected;
 
     [field: SerializeField] public int Value { get; private set; } = 1;
-    [field: SerializeField] public bool IsMarkedForCollection { get; private set; } = false;
 
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void MarkForCollection()
-    {
-        IsMarkedForCollection = true;
-    }
-
     public void ResetParameters()
     {
-        IsMarkedForCollection = false;
         transform.SetParent(null);
         _rigidbody.isKinematic = false;
     }

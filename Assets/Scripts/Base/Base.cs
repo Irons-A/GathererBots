@@ -3,7 +3,24 @@ using UnityEngine;
 
 public class Base : MonoBehaviour
 {
+    [SerializeField] private BaseScanner _scanner;
+
     [field: SerializeField] public List<Bot> Bots { get; private set; }
+
+    private void Awake()
+    {
+        _scanner = GetComponentInChildren<BaseScanner>();
+    }
+
+    private void OnEnable()
+    {
+        _scanner.GivingOrder += GiveOrder;
+    }
+
+    private void OnDisable()
+    {
+        _scanner.GivingOrder -= GiveOrder;
+    }
 
     private void Start()
     {
@@ -11,5 +28,12 @@ public class Base : MonoBehaviour
         {
             bot.SetBase(this);
         }
+
+        Debug.Log("scanner null");
+    }
+
+    private void GiveOrder(Bot bot, Resource target)
+    {
+        bot.SetTargetResource(target);
     }
 }
