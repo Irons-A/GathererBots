@@ -28,8 +28,6 @@ public class Base : MonoBehaviour
         {
             bot.SetBase(this);
         }
-
-        Debug.Log("scanner null");
     }
 
     private void GiveOrder(Bot bot, Resource target)
