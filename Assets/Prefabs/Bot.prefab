@@ -16,8 +16,6 @@ GameObject:
   - component: {fileID: 2716052197378043758}
   - component: {fileID: 8734718078874860937}
   - component: {fileID: 3055605147717364110}
-  - component: {fileID: 8620791417073329336}
-  - component: {fileID: 7354853308545725768}
   m_Layer: 0
   m_Name: Bot
   m_TagString: Untagged
@@ -131,7 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50372cc4bd9395e42bc5d4b5130c238b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pickupDistance: 1
+  _pickupDistance: 1.5
 --- !u!65 &8734718078874860937
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -180,32 +178,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8620791417073329336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1365922431525835715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfbebca33f8a3134daf4e9a9e2fd971b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 3
---- !u!114 &7354853308545725768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1365922431525835715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50372cc4bd9395e42bc5d4b5130c238b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _pickupDistance: 1
 --- !u!1 &1828573666837656226
 GameObject:
   m_ObjectHideFlags: 0
