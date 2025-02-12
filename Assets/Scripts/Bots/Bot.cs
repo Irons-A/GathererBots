@@ -10,7 +10,6 @@ public class Bot : MonoBehaviour
     private BotMover _mover;
     private BotDistanceChecker _distanceChecker;
 
-    public bool IsCarryingResource { get; private set; } = false;
     public Resource TargetResource { get; private set; }
 
     private void Awake()
@@ -33,7 +32,6 @@ public class Bot : MonoBehaviour
     {
         if (TargetResource == null || TargetResource.isActiveAndEnabled == false)
         {
-            IsCarryingResource = false;
             TargetResource = null;
             _mover.ClearTarget();
         }
@@ -46,17 +44,22 @@ public class Bot : MonoBehaviour
 
     public void SetTargetResource(Resource resource)
     {
-        IsCarryingResource = false;
         TargetResource = resource;
         _mover.SetTarget(resource.transform);
         _distanceChecker.SetTarget(resource);
     }
 
-    public void PickUpResource()
+    private void PickUpResource()
     {
-        TargetResource.GetPicked(_resourceAnchor);
+        TargetResource.Rigidbody.velocity = Vector3.zero;
+        TargetResource.Rigidbody.angularVelocity = Vector3.zero;
+        TargetResource.Rigidbody.isKinematic = true;
 
-        IsCarryingResource = true;
+        TargetResource.transform.SetParent(_resourceAnchor);
+
+        TargetResource.transform.localPosition = Vector3.zero;
+        TargetResource.transform.localEulerAngles = Vector3.zero;
+
         _mover.SetTarget(_assignedBase.transform);
     }
 }

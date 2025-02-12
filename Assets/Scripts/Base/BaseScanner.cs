@@ -13,7 +13,7 @@ public class BaseScanner : MonoBehaviour
     private Coroutine _scanRoutine;
     private List<Resource> _assignedResources;
 
-    public event Action<Bot, Resource> GivingOrder;
+    public event Action<Bot, Resource> GaveOrder;
 
     private void Start()
     {
@@ -30,21 +30,6 @@ public class BaseScanner : MonoBehaviour
     private void ClearTakenResources()
     {
         _assignedResources = _assignedResources.Where(r => r.isActiveAndEnabled == true).ToList();
-    }
-
-    private List<Bot> CheckForAvailableBots()
-    {
-        List<Bot> availableBots = new List<Bot>();
-
-        foreach (Bot bot in _core.Bots)
-        {
-            if (bot.TargetResource == null)
-            {
-                availableBots.Add(bot);
-            }
-        }
-
-        return availableBots;
     }
 
     private Resource PickNearestResource()
@@ -94,7 +79,7 @@ public class BaseScanner : MonoBehaviour
         {
             yield return delay;
 
-            List<Bot> availableBots = CheckForAvailableBots();
+            List<Bot> availableBots = _core.CheckForAvailableBots();
 
             if (availableBots.Count > 0)
             {
@@ -104,7 +89,7 @@ public class BaseScanner : MonoBehaviour
 
                     if (foundResource != null)
                     {
-                        GivingOrder?.Invoke(bot, foundResource);
+                        GaveOrder?.Invoke(bot, foundResource);
                         _assignedResources.Add(foundResource);
                     }
                 }

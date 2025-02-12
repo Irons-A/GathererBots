@@ -5,6 +5,7 @@ using UnityEngine;
 public class Resource : MonoBehaviour
 {
     private Rigidbody _rigidbody;
+    public Rigidbody Rigidbody => _rigidbody;
 
     public event Action<Resource> IsCollected;
 
@@ -24,17 +25,5 @@ public class Resource : MonoBehaviour
     public void MarkAsCollected()
     {
         IsCollected?.Invoke(this);
-    }
-
-    public void GetPicked(Transform parent)
-    {
-        _rigidbody.velocity = Vector3.zero;
-        _rigidbody.angularVelocity = Vector3.zero;
-        _rigidbody.isKinematic = true;
-
-        transform.SetParent(parent);
-
-        transform.localPosition = Vector3.zero;
-        transform.localEulerAngles = Vector3.zero;
     }
 }
