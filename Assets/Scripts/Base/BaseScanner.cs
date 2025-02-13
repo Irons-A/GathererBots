@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BaseScanner : MonoBehaviour
 {
-    [SerializeField] private Base _core;
     [SerializeField] private float _searchFieldRadius = 10f;
 
     private List<Resource> _assignedResources;
