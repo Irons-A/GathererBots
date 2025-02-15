@@ -40,5 +40,6 @@ public class ResourceObjectPool : MonoBehaviour
     {
         _pool.Enqueue(resource);
         resource.gameObject.SetActive(false);
+        resource.ResetParameters();
     }
 }

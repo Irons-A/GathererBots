@@ -1,34 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class BaseScanner : MonoBehaviour
 {
-    [SerializeField] private float _searchFieldRadius = 10f;
-
-    private List<Resource> _assignedResources;
-
-    private void Start()
-    {
-        _assignedResources = new List<Resource>();
-    }
+    [SerializeField] private float _searchFieldRadius = 60f;
 
     public Resource PickNearestResource()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, _searchFieldRadius);
-
-        List<Resource> availableResources = new List<Resource>();
-
-        ClearTakenResources();
-
-        foreach (Collider collider in colliders)
-        {
-            if (collider.gameObject.TryGetComponent(out Resource resource) 
-                && _assignedResources.Contains(resource) == false)
-            {
-                availableResources.Add(resource);
-            }
-        }
+        List<Resource> availableResources = ScanForResorces();
 
         if (availableResources.Count > 0)
         {
@@ -52,13 +33,21 @@ public class BaseScanner : MonoBehaviour
         return null;
     }
 
-    public void AddAssignedResource(Resource resource)
+    private List<Resource> ScanForResorces()
     {
-        _assignedResources.Add(resource);
-    }
+        Collider[] colliders = Physics.OverlapSphere(transform.position, _searchFieldRadius);
 
-    private void ClearTakenResources()
-    {
-        _assignedResources = _assignedResources.Where(resource => resource.isActiveAndEnabled).ToList();
+        List<Resource> availableResources = new List<Resource>();
+
+        foreach (Collider collider in colliders)
+        {
+            if (collider.gameObject.TryGetComponent(out Resource resource)
+                && resource.IsAssignedToBot == false)
+            {
+                availableResources.Add(resource);
+            }
+        }
+
+        return availableResources;
     }
 }

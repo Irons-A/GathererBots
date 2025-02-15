@@ -39,7 +39,6 @@ public class ResourceSpawner : MonoBehaviour
 
         resource.gameObject.SetActive(true);
         resource.transform.position = _spawnField.transform.position + randomPositionAddition;
-        resource.ResetParameters();
     }
 
     private IEnumerator ResourceSpawnRoutine()

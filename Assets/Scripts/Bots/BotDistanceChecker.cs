@@ -8,10 +8,40 @@ public class BotDistanceChecker : MonoBehaviour
     private Vector3 _offset;
     private float _sqrLength;
     private Resource _targetResource;
+    private Flag _targetFlag;
+    private BotState _botState;
 
-    public event Action TargetReached;
+    public event Action ResourceReached;
+    public event Action FlagReached;
 
     private void Update()
+    {
+        if (_botState == BotState.Gathering)
+        {
+            MoveToResource();
+        }
+        else if (_botState == BotState.Colonization)
+        {
+            MoveToFlag();
+        }
+    }
+
+    public void SetTargetResource(Resource target)
+    {
+        _targetResource = target;
+    }
+
+    public void SetTargetFlag(Flag target)
+    {
+        _targetFlag = target;
+    }
+
+    public void SetState(BotState state)
+    {
+        _botState = state;
+    }
+
+    private void MoveToResource()
     {
         if (_targetResource != null)
         {
@@ -20,14 +50,24 @@ public class BotDistanceChecker : MonoBehaviour
 
             if (_sqrLength < _pickupDistance * _pickupDistance)
             {
-                TargetReached?.Invoke();
+                ResourceReached?.Invoke();
                 _targetResource = null;
             }
         }
     }
 
-    public void SetTarget(Resource target)
+    private void MoveToFlag()
     {
-        _targetResource = target;
+        if (_targetFlag != null)
+        {
+            _offset = _targetFlag.transform.position - transform.position;
+            _sqrLength = _offset.sqrMagnitude;
+
+            if (_sqrLength < _pickupDistance * _pickupDistance)
+            {
+                FlagReached?.Invoke();
+                _targetFlag = null;
+            }
+        }
     }
 }

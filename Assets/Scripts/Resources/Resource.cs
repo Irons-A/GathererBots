@@ -5,11 +5,11 @@ using UnityEngine;
 public class Resource : MonoBehaviour
 {
     private Rigidbody _rigidbody;
-    public Rigidbody Rigidbody => _rigidbody;
 
     public event Action<Resource> IsCollected;
 
     [field: SerializeField] public int Value { get; private set; } = 1;
+    public bool IsAssignedToBot { get; private set; } = false;
 
     private void Awake()
     {
@@ -19,7 +19,12 @@ public class Resource : MonoBehaviour
     public void ResetParameters()
     {
         transform.SetParent(null);
-        _rigidbody.isKinematic = false;
+        IsAssignedToBot = false;
+    }
+
+    public void MarkAsAssigned()
+    {
+        IsAssignedToBot = true;
     }
 
     public void MarkAsCollected()

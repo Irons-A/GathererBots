@@ -9,6 +9,8 @@ public class Bot : MonoBehaviour
 
     private BotMover _mover;
     private BotDistanceChecker _distanceChecker;
+    private BotState _currentState;
+    private Flag _targetFlag;
 
     public Resource TargetResource { get; private set; }
 
@@ -20,21 +22,32 @@ public class Bot : MonoBehaviour
 
     private void OnEnable()
     {
-        _distanceChecker.TargetReached += PickUpResource;
+        _distanceChecker.ResourceReached += PickUpResource;
+        _distanceChecker.FlagReached += ActivateFlag;
     }
 
     private void OnDisable()
     {
-        _distanceChecker.TargetReached -= PickUpResource;
+        _distanceChecker.ResourceReached -= PickUpResource;
+        _distanceChecker.FlagReached -= ActivateFlag;
     }
 
     private void Update()
     {
-        if (TargetResource == null || TargetResource.isActiveAndEnabled == false)
+        if (_currentState == BotState.Gathering)
         {
-            TargetResource = null;
-            _mover.ClearTarget();
+            if (TargetResource == null || TargetResource.isActiveAndEnabled == false)
+            {
+                TargetResource = null;
+                _mover.ClearTarget();
+            }
         }
+    }
+
+    public void SetState(BotState state)
+    {
+        _currentState = state;
+        _distanceChecker.SetState(state);
     }
 
     public void SetBase(Base botBase)
@@ -42,24 +55,38 @@ public class Bot : MonoBehaviour
         _assignedBase = botBase;
     }
 
+    public void SetTargetFlag(Flag flag)
+    {
+        _targetFlag = flag;
+        _mover.SetTarget(flag.transform);
+        _distanceChecker.SetTargetFlag(flag);
+    }
+
+    public void ClearTargetFlag()
+    {
+        _targetFlag = null;
+        _mover.ClearTarget();
+    }
+
     public void SetTargetResource(Resource resource)
     {
         TargetResource = resource;
         _mover.SetTarget(resource.transform);
-        _distanceChecker.SetTarget(resource);
+        _distanceChecker.SetTargetResource(resource);
     }
 
     private void PickUpResource()
     {
-        TargetResource.Rigidbody.velocity = Vector3.zero;
-        TargetResource.Rigidbody.angularVelocity = Vector3.zero;
-        TargetResource.Rigidbody.isKinematic = true;
-
         TargetResource.transform.SetParent(_resourceAnchor);
 
         TargetResource.transform.localPosition = Vector3.zero;
         TargetResource.transform.localEulerAngles = Vector3.zero;
 
         _mover.SetTarget(_assignedBase.transform);
+    }
+
+    private void ActivateFlag()
+    {
+        _targetFlag.BuildBase(this);
     }
 }
