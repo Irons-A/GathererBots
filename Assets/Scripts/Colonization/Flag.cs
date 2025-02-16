@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Flag : MonoBehaviour, ITargetable
@@ -15,7 +13,7 @@ public class Flag : MonoBehaviour, ITargetable
             _baseBuildHeight, transform.position.z), Quaternion.identity);
         newBase.AddBot(firstBot);
         firstBot.SetBase(newBase);
-        firstBot.ClearTargetFlag();
+        firstBot.ClearTarget();
         Destroy(gameObject);
     }
 }

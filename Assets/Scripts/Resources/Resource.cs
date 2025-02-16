@@ -2,19 +2,13 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Resource : MonoBehaviour
+public class Resource : MonoBehaviour, ITargetable
 {
-    private Rigidbody _rigidbody;
-
     public event Action<Resource> IsCollected;
 
     [field: SerializeField] public int Value { get; private set; } = 1;
     public bool IsAssignedToBot { get; private set; } = false;
-
-    private void Awake()
-    {
-        _rigidbody = GetComponent<Rigidbody>();
-    }
+    public Vector3 Position => transform.position;
 
     public void ResetParameters()
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class Base : MonoBehaviour
+public class Base : MonoBehaviour, ITargetable
 {
     [SerializeField] private BaseScanner _scanner;
     [SerializeField] private BaseResourceGatherer _resourceGatherer;
@@ -27,6 +27,7 @@ public class Base : MonoBehaviour
 
     [field: SerializeField] public BaseState CurrentState { get; private set; }
     public bool CanStartColonization => _bots.Count > _newBaseBotAmountRequired;
+    public Vector3 Position => transform.position;
 
     private void Awake()
     {
@@ -96,6 +97,7 @@ public class Base : MonoBehaviour
     private void CreateNewBot()
     {
         _resources -= _newBotPrice;
+        UpdateText();
         Bot newBot = Instantiate(_botPrefab, _botSpawnPoint.position, Quaternion.identity);
         _bots.Add(newBot);
         newBot.SetBase(this);
@@ -145,13 +147,14 @@ public class Base : MonoBehaviour
 
     private void GiveGatheringOrder(Bot bot, Resource target)
     {
-        bot.SetTargetResource(target);
+        bot.SetTarget(target);
     }
 
     private void GiveColonizationOrder(Bot bot, Flag target)
     {
         bot.SetState(BotState.Colonization);
         bot.SetTargetFlag(target);
+        bot.SetTarget(target);
     }
 
     private IEnumerator ScanRoutine()

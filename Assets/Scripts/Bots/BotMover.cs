@@ -4,18 +4,18 @@ public class BotMover : MonoBehaviour
 {
     [SerializeField] private float _speed = 3f;
 
-    private Transform _target;
+    private ITargetable _target;
 
     private void Update()
     {
         if (_target != null)
         {
-            transform.LookAt(_target);
-            transform.position = Vector3.MoveTowards(transform.position, _target.position, _speed * Time.deltaTime);
+            transform.LookAt(_target.Position);
+            transform.position = Vector3.MoveTowards(transform.position, _target.Position, _speed * Time.deltaTime);
         }
     }
 
-    public void SetTarget(Transform target)
+    public void SetTarget(ITargetable target)
     {
         _target = target;
     }

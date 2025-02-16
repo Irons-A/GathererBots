@@ -9,8 +9,9 @@ public class Bot : MonoBehaviour
 
     private BotMover _mover;
     private BotDistanceChecker _distanceChecker;
-    private BotState _currentState;
     private Flag _targetFlag;
+    private BotState _currentState;
+    private ITargetable _target;
 
     public Resource TargetResource { get; private set; }
 
@@ -47,7 +48,6 @@ public class Bot : MonoBehaviour
     public void SetState(BotState state)
     {
         _currentState = state;
-        _distanceChecker.SetState(state);
     }
 
     public void SetBase(Base botBase)
@@ -58,21 +58,24 @@ public class Bot : MonoBehaviour
     public void SetTargetFlag(Flag flag)
     {
         _targetFlag = flag;
-        _mover.SetTarget(flag.transform);
-        _distanceChecker.SetTargetFlag(flag);
     }
 
-    public void ClearTargetFlag()
+    public void SetTarget(ITargetable target)
     {
-        _targetFlag = null;
+        _target = target;
+        _mover.SetTarget(target);
+        _distanceChecker.SetTarget(target);
+
+        if (target is Resource)
+        {
+            TargetResource = (Resource)target;
+        }
+    }
+
+    public void ClearTarget()
+    {
+        _target = null;
         _mover.ClearTarget();
-    }
-
-    public void SetTargetResource(Resource resource)
-    {
-        TargetResource = resource;
-        _mover.SetTarget(resource.transform);
-        _distanceChecker.SetTargetResource(resource);
     }
 
     private void PickUpResource()
@@ -82,7 +85,7 @@ public class Bot : MonoBehaviour
         TargetResource.transform.localPosition = Vector3.zero;
         TargetResource.transform.localEulerAngles = Vector3.zero;
 
-        _mover.SetTarget(_assignedBase.transform);
+        _mover.SetTarget(_assignedBase);
     }
 
     private void ActivateFlag()

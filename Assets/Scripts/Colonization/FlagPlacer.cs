@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using UnityEngine;
 
 public class FlagPlacer : MonoBehaviour
@@ -35,7 +33,7 @@ public class FlagPlacer : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(MouseSelectionButtonIndex))
         {
-            ProcessSelectedBse();
+            ProcessSelectedBase();
         }
         else if (Input.GetMouseButtonDown(MouseDeselectionButtonIndex))
         {
@@ -43,18 +41,15 @@ public class FlagPlacer : MonoBehaviour
         }
     }
 
-    private void ProcessSelectedBse()
+    private void ProcessSelectedBase()
     {
-        if (_selectedBase == null)
-        {
-            Base botBase = GetBase();
+        Base botBase = GetBaseClick();
 
-            if (botBase != null)
-            {
-                PickBase(botBase);
-            }
+        if (botBase != null)
+        {
+            PickBase(botBase);
         }
-        else
+        else if (_selectedBase != null)
         {
             if (_selectedBase.CurrentState == BaseState.Gathering)
             {
@@ -107,7 +102,7 @@ public class FlagPlacer : MonoBehaviour
         return false;
     }
 
-    private Base GetBase()
+    private Base GetBaseClick()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
