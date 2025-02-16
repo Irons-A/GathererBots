@@ -11,7 +11,6 @@ public class Bot : MonoBehaviour
     private BotDistanceChecker _distanceChecker;
     private Flag _targetFlag;
     private BotState _currentState;
-    private ITargetable _target;
 
     public Resource TargetResource { get; private set; }
 
@@ -62,7 +61,6 @@ public class Bot : MonoBehaviour
 
     public void SetTarget(ITargetable target)
     {
-        _target = target;
         _mover.SetTarget(target);
         _distanceChecker.SetTarget(target);
 
@@ -74,7 +72,6 @@ public class Bot : MonoBehaviour
 
     public void ClearTarget()
     {
-        _target = null;
         _mover.ClearTarget();
     }
 

@@ -58,6 +58,8 @@ public class BuildingsPlacer : MonoBehaviour
                 TryGetPlaceableSurface();
                 _selectedBase.UpdateFlagPosition(_flagPlacementPoint);
             }
+
+            NulifyBaseSelection();
         }
     }
 
@@ -135,7 +137,7 @@ public class BuildingsPlacer : MonoBehaviour
         _colonizingBases.Remove(botBase);
         botBase.ColonizationFinished -= ClearColonizationTask;
 
-        if(_selectedBase == botBase)
+        if (_selectedBase == botBase)
         {
             _selectedBase = null;
         }
