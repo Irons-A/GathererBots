@@ -2,16 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 public class Base : MonoBehaviour, ITargetable
 {
     [SerializeField] private BaseScanner _scanner;
     [SerializeField] private BaseResourceGatherer _resourceGatherer;
+    [SerializeField] private BaseUI _baseUI;
     [SerializeField] private List<Bot> _bots;
     [SerializeField] private float _scanFrequency = 1f;
-    [SerializeField] private TMP_Text _text;
     [SerializeField] private Bot _botPrefab;
     [SerializeField] private Transform _botSpawnPoint;
     [SerializeField] private int _newBotPrice = 3;
@@ -26,6 +25,7 @@ public class Base : MonoBehaviour, ITargetable
     public event Action<Base> ColonizationFinished;
 
     [field: SerializeField] public BaseState CurrentState { get; private set; }
+
     public bool CanStartColonization => _bots.Count > _newBaseBotAmountRequired;
     public Vector3 Position => transform.position;
 
@@ -33,6 +33,7 @@ public class Base : MonoBehaviour, ITargetable
     {
         _scanner = GetComponentInChildren<BaseScanner>();
         _resourceGatherer = GetComponentInChildren<BaseResourceGatherer>();
+        _baseUI = GetComponentInChildren<BaseUI>();
     }
 
     private void OnEnable()
@@ -51,28 +52,14 @@ public class Base : MonoBehaviour, ITargetable
 
         _expectedResources = new List<Resource>();
 
-        if (_bots.Count > 0)
-        {
-            foreach (Bot bot in _bots)
-            {
-                bot.SetBase(this);
-                bot.SetState(BotState.Gathering);
-            }
-        }
-
-        if (_scanRoutine != null)
-        {
-            StopCoroutine(_scanRoutine);
-        }
-
-        _scanRoutine = StartCoroutine(ScanRoutine());
+        StartingConfiguration();
     }
 
     private void Update()
     {
         if (CurrentState == BaseState.Gathering && _resources >= _newBotPrice)
         {
-            CreateNewBot();
+            SpawnBot();
         }
     }
 
@@ -94,10 +81,29 @@ public class Base : MonoBehaviour, ITargetable
         _flag.transform.position = newPosition;
     }
 
-    private void CreateNewBot()
+    private void StartingConfiguration()
+    {
+        if (_bots.Count > 0)
+        {
+            foreach (Bot bot in _bots)
+            {
+                bot.SetBase(this);
+                bot.SetState(BotState.Gathering);
+            }
+        }
+
+        if (_scanRoutine != null)
+        {
+            StopCoroutine(_scanRoutine);
+        }
+
+        _scanRoutine = StartCoroutine(ScanRoutine());
+    }
+
+    private void SpawnBot()
     {
         _resources -= _newBotPrice;
-        UpdateText();
+        _baseUI.UpdateText(_resources);
         Bot newBot = Instantiate(_botPrefab, _botSpawnPoint.position, Quaternion.identity);
         _bots.Add(newBot);
         newBot.SetBase(this);
@@ -137,12 +143,7 @@ public class Base : MonoBehaviour, ITargetable
 
         _resources += newResource.Value;
         newResource.MarkAsCollected();
-        UpdateText();
-    }
-
-    private void UpdateText()
-    {
-        _text.text = _resources.ToString();
+        _baseUI.UpdateText(_resources);
     }
 
     private void GiveGatheringOrder(Bot bot, Resource target)
@@ -173,7 +174,7 @@ public class Base : MonoBehaviour, ITargetable
                 {
                     GiveColonizationOrder(SelectColonizerBot(availableBots), _flag);
                     _resources -= _newBasePrice;
-                    UpdateText();
+                    _baseUI.UpdateText(_resources);
                     CurrentState = BaseState.Gathering;
 
                     ColonizationFinished?.Invoke(this);
@@ -188,15 +189,18 @@ public class Base : MonoBehaviour, ITargetable
 
     private void AssignResources(List<Bot> availableBots)
     {
-        foreach (Bot bot in availableBots)
-        {
-            Resource nearestResource = _scanner.PickNearestResource();
+        List<Resource> nearestResources = _scanner.GetSortedResources();
 
-            if (nearestResource != null)
+        if (nearestResources != null)
+        {
+            for (int i = 0; i < availableBots.Count; i++)
             {
-                GiveGatheringOrder(bot, nearestResource);
-                nearestResource.MarkAsAssigned();
-                _expectedResources.Add(nearestResource);
+                if (nearestResources.Count > i)
+                {
+                    GiveGatheringOrder(availableBots[i], nearestResources[i]);
+                    nearestResources[i].MarkAsAssigned();
+                    _expectedResources.Add(nearestResources[i]);
+                }
             }
         }
     }

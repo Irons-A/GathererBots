@@ -1,19 +1,14 @@
+using System;
 using UnityEngine;
 
 public class Flag : MonoBehaviour, ITargetable
 {
-    [SerializeField] private Base _basePrefab;
-    [SerializeField] private float _baseBuildHeight = 0;
-
     public Vector3 Position => transform.position;
 
-    public void BuildBase(Bot firstBot)
+    public event Action<Bot, Flag> FlagReached;
+
+    public void TriggerBaseBuilding(Bot bot)
     {
-        Base newBase = Instantiate(_basePrefab, new Vector3(transform.position.x, 
-            _baseBuildHeight, transform.position.z), Quaternion.identity);
-        newBase.AddBot(firstBot);
-        firstBot.SetBase(newBase);
-        firstBot.ClearTarget();
-        Destroy(gameObject);
+        FlagReached?.Invoke(bot, this);
     }
 }

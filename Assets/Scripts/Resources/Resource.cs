@@ -7,6 +7,7 @@ public class Resource : MonoBehaviour, ITargetable
     public event Action<Resource> IsCollected;
 
     [field: SerializeField] public int Value { get; private set; } = 1;
+
     public bool IsAssignedToBot { get; private set; } = false;
     public Vector3 Position => transform.position;
 

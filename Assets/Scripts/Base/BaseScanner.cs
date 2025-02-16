@@ -1,31 +1,42 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BaseScanner : MonoBehaviour
 {
     [SerializeField] private float _searchFieldRadius = 60f;
 
-    public Resource PickNearestResource()
+    public List<Resource> GetSortedResources()
     {
         List<Resource> availableResources = ScanForResorces();
 
         if (availableResources.Count > 0)
         {
-            Resource nearestResource = null;
-            float minSqrDistance = Mathf.Infinity;
+            List<Resource> sortedResources = new List<Resource>();
 
-            foreach (Resource resource in availableResources)
+            for (int i = 0; i < availableResources.Count; i++)
             {
-                float sqrDistanceToCenter = (transform.position - resource.transform.position).sqrMagnitude;
+                float minSqrDistance = Mathf.Infinity;
+                Resource nearestResource = null;
 
-                if (sqrDistanceToCenter < minSqrDistance)
+                foreach (Resource resource in availableResources)
                 {
-                    minSqrDistance = sqrDistanceToCenter;
-                    nearestResource = resource;
+                    float sqrDistanceToCenter = (transform.position - resource.transform.position).sqrMagnitude;
+
+                    if (sqrDistanceToCenter < minSqrDistance)
+                    {
+                        minSqrDistance = sqrDistanceToCenter;
+                        nearestResource = resource;
+                    }
                 }
+
+                sortedResources.Add(nearestResource);
+
+                availableResources = availableResources.Where(resource => resource != nearestResource).ToList();
             }
 
-            return nearestResource;
+
+            return sortedResources;
         }
 
         return null;

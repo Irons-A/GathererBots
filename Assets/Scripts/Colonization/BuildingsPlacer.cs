@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlagPlacer : MonoBehaviour
+public class BuildingsPlacer : MonoBehaviour
 {
-    public const int MouseSelectionButtonIndex = 0;
-    public const int MouseDeselectionButtonIndex = 1;
-
+    [SerializeField] private InputReader _inputReader;
     [SerializeField] private Flag _flagPrefab;
     [SerializeField] private float _flagPlacementHeight = -1f;
+    [SerializeField] private Base _basePrefab;
+    [SerializeField] private float _baseBuildHeight = 0;
 
     private Base _selectedBase;
     private Vector3 _flagPlacementPoint;
@@ -19,6 +19,9 @@ public class FlagPlacer : MonoBehaviour
         {
             _selectedBase.ColonizationFinished += ClearColonizationTask;
         }
+
+        _inputReader.SelectionButtonPressed += ProcessSelectedBase;
+        _inputReader.DeselectionButtonPressed += NulifyBaseSelection;
     }
 
     private void OnDisable()
@@ -27,18 +30,9 @@ public class FlagPlacer : MonoBehaviour
         {
             _selectedBase.ColonizationFinished -= ClearColonizationTask;
         }
-    }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(MouseSelectionButtonIndex))
-        {
-            ProcessSelectedBase();
-        }
-        else if (Input.GetMouseButtonDown(MouseDeselectionButtonIndex))
-        {
-            NulifyBaseSelection();
-        }
+        _inputReader.SelectionButtonPressed -= ProcessSelectedBase;
+        _inputReader.DeselectionButtonPressed -= NulifyBaseSelection;
     }
 
     private void ProcessSelectedBase()
@@ -72,6 +66,7 @@ public class FlagPlacer : MonoBehaviour
         if (TryGetPlaceableSurface())
         {
             Flag flag = Instantiate(_flagPrefab, _flagPlacementPoint, Quaternion.identity);
+            flag.FlagReached += BuildBase;
             _selectedBase.StartColonization(flag);
             _selectedBase.UpdateFlagPosition(flag.transform.position);
 
@@ -144,5 +139,15 @@ public class FlagPlacer : MonoBehaviour
         {
             _selectedBase = null;
         }
+    }
+
+    private void BuildBase(Bot firstBot, Flag flag)
+    {
+        Base newBase = Instantiate(_basePrefab, new Vector3(flag.transform.position.x,
+            _baseBuildHeight, flag.transform.position.z), Quaternion.identity);
+        newBase.AddBot(firstBot);
+        firstBot.SetBase(newBase);
+        firstBot.ClearTarget();
+        Destroy(gameObject);
     }
 }

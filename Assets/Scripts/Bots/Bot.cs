@@ -90,6 +90,6 @@ public class Bot : MonoBehaviour
 
     private void ActivateFlag()
     {
-        _targetFlag.BuildBase(this);
+        _targetFlag.TriggerBaseBuilding(this);
     }
 }
