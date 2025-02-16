@@ -148,6 +148,5 @@ public class BuildingsPlacer : MonoBehaviour
         newBase.AddBot(firstBot);
         firstBot.SetBase(newBase);
         firstBot.ClearTarget();
-        Destroy(gameObject);
     }
 }

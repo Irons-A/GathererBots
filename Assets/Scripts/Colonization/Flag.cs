@@ -10,5 +10,6 @@ public class Flag : MonoBehaviour, ITargetable
     public void TriggerBaseBuilding(Bot bot)
     {
         FlagReached?.Invoke(bot, this);
+        Destroy(gameObject);
     }
 }
