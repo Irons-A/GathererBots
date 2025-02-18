@@ -395,7 +395,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scanner: {fileID: 0}
   _resourceGatherer: {fileID: 0}
-  _baseUI: {fileID: 0}
   _bots: []
   _scanFrequency: 1
   _botPrefab: {fileID: 5747028868135906463, guid: e70ade344eef4984bba50365cf2a729b, type: 3}
@@ -497,6 +496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 3120571216844662830}
+  _base: {fileID: 9058098873856356355}
 --- !u!114 &3120571216844662830
 MonoBehaviour:
   m_ObjectHideFlags: 0

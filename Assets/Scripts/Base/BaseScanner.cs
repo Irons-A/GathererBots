@@ -6,9 +6,9 @@ public class BaseScanner : MonoBehaviour
 {
     [SerializeField] private float _searchFieldRadius = 60f;
 
-    public List<Resource> GetSortedResources()
+    public List<Resource> GetSortedResources(List<Resource> expectedResources)
     {
-        List<Resource> availableResources = ScanForResorces();
+        List<Resource> availableResources = ScanForResorces(expectedResources);
 
         if (availableResources.Count > 0)
         {
@@ -42,7 +42,7 @@ public class BaseScanner : MonoBehaviour
         return null;
     }
 
-    private List<Resource> ScanForResorces()
+    private List<Resource> ScanForResorces(List<Resource> expectedResources)
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, _searchFieldRadius);
 

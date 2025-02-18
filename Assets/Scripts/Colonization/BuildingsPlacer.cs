@@ -52,6 +52,10 @@ public class BuildingsPlacer : MonoBehaviour
                     _colonizingBases.Add(_selectedBase);
                     _selectedBase.ColonizationFinished += ClearColonizationTask;
                 }
+                else
+                {
+                    NulifyBaseSelection();
+                }
             }
             else if (_selectedBase.CurrentState == BaseState.Colonization)
             {
@@ -74,12 +78,8 @@ public class BuildingsPlacer : MonoBehaviour
 
             return true;
         }
-        else
-        {
-            NulifyBaseSelection();
 
-            return false;
-        }
+        return false;
     }
 
     private bool TryGetPlaceableSurface()

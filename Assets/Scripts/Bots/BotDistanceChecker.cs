@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class BotDistanceChecker : MonoBehaviour
@@ -8,23 +9,26 @@ public class BotDistanceChecker : MonoBehaviour
     private Vector3 _offset;
     private float _sqrLength;
     private ITargetable _target;
+    private Coroutine _distanceRoutine;
 
     public event Action ResourceReached;
     public event Action FlagReached;
 
-    private void Update()
-    {
-        MoveToTarget();
-    }
-
     public void SetTarget(ITargetable target)
     {
         _target = target;
+
+        if (_distanceRoutine != null)
+        {
+            StopCoroutine(DistanceRoutine());
+        }
+
+        _distanceRoutine = StartCoroutine(DistanceRoutine());
     }
 
-    private void MoveToTarget()
+    private IEnumerator DistanceRoutine()
     {
-        if (_target != null)
+        while (_target != null)
         {
             _offset = _target.Position - transform.position;
             _sqrLength = _offset.sqrMagnitude;
@@ -42,6 +46,8 @@ public class BotDistanceChecker : MonoBehaviour
 
                 _target = null;
             }
+
+            yield return null;
         }
     }
 }

@@ -8,7 +8,6 @@ public class Base : MonoBehaviour, ITargetable
 {
     [SerializeField] private BaseScanner _scanner;
     [SerializeField] private BaseResourceGatherer _resourceGatherer;
-    [SerializeField] private BaseUI _baseUI;
     [SerializeField] private List<Bot> _bots;
     [SerializeField] private float _scanFrequency = 1f;
     [SerializeField] private Bot _botPrefab;
@@ -23,6 +22,7 @@ public class Base : MonoBehaviour, ITargetable
     private Flag _flag;
 
     public event Action<Base> ColonizationFinished;
+    public event Action<int> ResourceValueChanged;
 
     [field: SerializeField] public BaseState CurrentState { get; private set; }
 
@@ -33,7 +33,6 @@ public class Base : MonoBehaviour, ITargetable
     {
         _scanner = GetComponentInChildren<BaseScanner>();
         _resourceGatherer = GetComponentInChildren<BaseResourceGatherer>();
-        _baseUI = GetComponentInChildren<BaseUI>();
     }
 
     private void OnEnable()
@@ -103,7 +102,7 @@ public class Base : MonoBehaviour, ITargetable
     private void SpawnBot()
     {
         _resources -= _newBotPrice;
-        _baseUI.UpdateText(_resources);
+        ResourceValueChanged?.Invoke(_resources);
         Bot newBot = Instantiate(_botPrefab, _botSpawnPoint.position, Quaternion.identity);
         _bots.Add(newBot);
         newBot.SetBase(this);
@@ -143,7 +142,7 @@ public class Base : MonoBehaviour, ITargetable
 
         _resources += newResource.Value;
         newResource.MarkAsCollected();
-        _baseUI.UpdateText(_resources);
+        ResourceValueChanged?.Invoke(_resources);
     }
 
     private void GiveGatheringOrder(Bot bot, Resource target)
@@ -174,7 +173,7 @@ public class Base : MonoBehaviour, ITargetable
                 {
                     GiveColonizationOrder(SelectColonizerBot(availableBots), _flag);
                     _resources -= _newBasePrice;
-                    _baseUI.UpdateText(_resources);
+                    ResourceValueChanged?.Invoke(_resources);
                     CurrentState = BaseState.Gathering;
 
                     ColonizationFinished?.Invoke(this);
@@ -189,7 +188,7 @@ public class Base : MonoBehaviour, ITargetable
 
     private void AssignResources(List<Bot> availableBots)
     {
-        List<Resource> nearestResources = _scanner.GetSortedResources();
+        List<Resource> nearestResources = _scanner.GetSortedResources(_expectedResources);
 
         if (nearestResources != null)
         {
