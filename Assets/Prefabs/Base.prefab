@@ -395,6 +395,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scanner: {fileID: 0}
   _resourceGatherer: {fileID: 0}
+  _dispatcher: {fileID: 0}
   _bots: []
   _scanFrequency: 1
   _botPrefab: {fileID: 5747028868135906463, guid: e70ade344eef4984bba50365cf2a729b, type: 3}

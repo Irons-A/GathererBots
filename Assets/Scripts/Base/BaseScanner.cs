@@ -6,16 +6,13 @@ public class BaseScanner : MonoBehaviour
 {
     [SerializeField] private float _searchFieldRadius = 60f;
 
-    public List<Resource> GetSortedResources()
+    public List<Resource> GetAvailableResources()
     {
         List<Resource> availableResources = ScanForResorces();
 
         if (availableResources.Count > 0)
         {
-            List<Resource> sortedResources = availableResources.OrderBy(resource => 
-            (transform.position - resource.transform.position).sqrMagnitude).ToList();
-
-            return sortedResources;
+            return availableResources;
         }
 
         return null;
@@ -29,8 +26,7 @@ public class BaseScanner : MonoBehaviour
 
         foreach (Collider collider in colliders)
         {
-            if (collider.gameObject.TryGetComponent(out Resource resource)
-                && resource.IsAssignedToBot == false)
+            if (collider.gameObject.TryGetComponent(out Resource resource))
             {
                 availableResources.Add(resource);
             }

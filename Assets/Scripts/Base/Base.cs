@@ -8,6 +8,7 @@ public class Base : MonoBehaviour, ITargetable
 {
     [SerializeField] private BaseScanner _scanner;
     [SerializeField] private BaseResourceGatherer _resourceGatherer;
+    [SerializeField] private BaseDispatcher _dispatcher;
     [SerializeField] private List<Bot> _bots;
     [SerializeField] private float _scanFrequency = 1f;
     [SerializeField] private Bot _botPrefab;
@@ -33,6 +34,7 @@ public class Base : MonoBehaviour, ITargetable
     {
         _scanner = GetComponentInChildren<BaseScanner>();
         _resourceGatherer = GetComponentInChildren<BaseResourceGatherer>();
+        _dispatcher = FindObjectOfType<BaseDispatcher>();
     }
 
     private void OnEnable()
@@ -141,6 +143,7 @@ public class Base : MonoBehaviour, ITargetable
         _expectedResources = _expectedResources.Where(resource => resource != newResource).ToList();
 
         _resources += newResource.Value;
+        _dispatcher.RemoveBusyResource(newResource);
         newResource.MarkAsCollected();
         ResourceValueChanged?.Invoke(_resources);
     }
@@ -188,20 +191,32 @@ public class Base : MonoBehaviour, ITargetable
 
     private void AssignResources(List<Bot> availableBots)
     {
-        List<Resource> nearestResources = _scanner.GetSortedResources();
+        List<Resource> availableResources = _scanner.GetAvailableResources();
 
-        if (nearestResources != null)
+        if (availableResources != null)
         {
+            availableResources = SortResources(availableResources);
+
             for (int i = 0; i < availableBots.Count; i++)
             {
-                if (nearestResources.Count > i)
+                if (availableResources.Count > i)
                 {
-                    GiveGatheringOrder(availableBots[i], nearestResources[i]);
-                    nearestResources[i].MarkAsAssigned();
-                    _expectedResources.Add(nearestResources[i]);
+                    GiveGatheringOrder(availableBots[i], availableResources[i]);
+                    _dispatcher.AddBusyResource(availableResources[i]);
+                    _expectedResources.Add(availableResources[i]);
                 }
             }
         }
+    }
+
+    private List<Resource> SortResources(List<Resource> availableResources)
+    {
+        availableResources = availableResources.Where(resource => _dispatcher.CheckIsResourceBusy(resource) == false).ToList();
+
+        availableResources = availableResources.OrderBy(resource =>
+            (transform.position - resource.transform.position).sqrMagnitude).ToList();
+
+        return availableResources;
     }
 
     private Bot SelectColonizerBot(List<Bot> availableBots)
