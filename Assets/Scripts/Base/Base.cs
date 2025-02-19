@@ -188,7 +188,7 @@ public class Base : MonoBehaviour, ITargetable
 
     private void AssignResources(List<Bot> availableBots)
     {
-        List<Resource> nearestResources = _scanner.GetSortedResources(_expectedResources);
+        List<Resource> nearestResources = _scanner.GetSortedResources();
 
         if (nearestResources != null)
         {

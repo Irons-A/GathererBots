@@ -117,11 +117,8 @@ public class BuildingsPlacer : MonoBehaviour
 
     private void PickBase(Base botBase)
     {
-        if (botBase.CurrentState == BaseState.Gathering && botBase.CanStartColonization == true)
-        {
-            _selectedBase = botBase;
-        }
-        else if (botBase.CurrentState == BaseState.Colonization)
+        if ((botBase.CurrentState == BaseState.Gathering && botBase.CanStartColonization) 
+            || botBase.CurrentState == BaseState.Colonization)
         {
             _selectedBase = botBase;
         }

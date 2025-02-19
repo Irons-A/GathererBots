@@ -6,35 +6,14 @@ public class BaseScanner : MonoBehaviour
 {
     [SerializeField] private float _searchFieldRadius = 60f;
 
-    public List<Resource> GetSortedResources(List<Resource> expectedResources)
+    public List<Resource> GetSortedResources()
     {
-        List<Resource> availableResources = ScanForResorces(expectedResources);
+        List<Resource> availableResources = ScanForResorces();
 
         if (availableResources.Count > 0)
         {
-            List<Resource> sortedResources = new List<Resource>();
-
-            for (int i = 0; i < availableResources.Count; i++)
-            {
-                float minSqrDistance = Mathf.Infinity;
-                Resource nearestResource = null;
-
-                foreach (Resource resource in availableResources)
-                {
-                    float sqrDistanceToCenter = (transform.position - resource.transform.position).sqrMagnitude;
-
-                    if (sqrDistanceToCenter < minSqrDistance)
-                    {
-                        minSqrDistance = sqrDistanceToCenter;
-                        nearestResource = resource;
-                    }
-                }
-
-                sortedResources.Add(nearestResource);
-
-                availableResources = availableResources.Where(resource => resource != nearestResource).ToList();
-            }
-
+            List<Resource> sortedResources = availableResources.OrderBy(resource => 
+            (transform.position - resource.transform.position).sqrMagnitude).ToList();
 
             return sortedResources;
         }
@@ -42,7 +21,7 @@ public class BaseScanner : MonoBehaviour
         return null;
     }
 
-    private List<Resource> ScanForResorces(List<Resource> expectedResources)
+    private List<Resource> ScanForResorces()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, _searchFieldRadius);
 
